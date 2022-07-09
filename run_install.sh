@@ -64,6 +64,8 @@ then
         # Cài gdnsd
         echo -e "\e[1m\e[91m\e[100mCài gdnsd bằng ansible\e[0m"
         ansible-playbook -i hosts worker.yml -l test-1 -t install_gdnsd
+        echo -e "\e[1m\e[91m\e[100mKiểm tra gdnsd trên server\e[0m"
+        multipass exec ${INSTANCE_NAME} -- sudo bash -c 'gdnsd status; gdnsd checkconf'
 fi
 
 if [ $1 = 'logrotate' ];
