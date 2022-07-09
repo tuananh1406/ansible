@@ -1,0 +1,55 @@
+- name: Download python3.6.12 source
+  get_url:
+   url: https://www.python.org/ftp/python/3.6.12/Python-3.6.12.tar.xz
+   dest: /opt/Python-3.6.12.tar.xz
+   checksum: md5:9ca8ca6f206e9ac0f0726ecb4ebb6e2c
+
+- name: Untar source
+  unarchive:
+   src: /opt/Python-3.6.12.tar.xz
+   dest: /opt
+   remote_src: yes
+
+- name: Config python3.6.12
+  shell: ./configure --enable-optimizations --with-ensurepip=install --with-lto --enable-loadable-sqlite-extensions
+  args: 
+    chdir: /opt/Python-3.6.12
+  async: 1500
+  poll: 0
+  register: config_result
+
+- name: Check config python progress
+  async_status:
+    jid: "{{ config_result.ansible_job_id }}"
+  register: job_config
+  until: job_config.finished
+  retries: 30
+  delay: 15
+
+- name: Install python
+  shell: make -j 8 && make altinstall
+  args:
+    chdir: /opt/Python-3.6.12
+  async: 3000
+  poll: 0
+  register: install_result
+
+- name: Check install python progress
+  async_status:
+    jid: "{{ install_result.ansible_job_id }}"
+  register: job_install
+  until: job_install.finished
+  retries: 100
+  delay: 30
+
+- name: Clean
+  ansible.builtin.file:
+    path: /opt/Python-3.6.12.tar.xz
+    state: absent
+    force: yes
+
+- name: Clean
+  ansible.builtin.file:
+    path: /opt/Python-3.6.12
+    state: absent
+    force: yes

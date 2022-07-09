@@ -1,0 +1,42 @@
+- name: Lấy thông tin dnscap của hệ thống
+  command:
+    cmd: which dnscap
+  register: where_dnscap_installed
+  ignore_errors: true
+
+- name: Cài đặt dnscap
+  import_tasks: dnscap2-0-1.yml
+  become: yes
+  become_user: root
+  when: "not where_dnscap_installed.stdout"
+
+- name: Tạo config logrotate
+  template:
+    src: logrotate.d.j2
+    dest: /etc/logrotate.d/service-log
+  with_items:
+    - path: "/tmp/gdnsd.log"
+      options:
+        - su root root
+        - daily
+        - missingok
+        - dateext
+        - rotate 30
+        - nocompress
+
+- name: Kiểm tra thư mục /opt/log_dns
+  stat:
+    path: /opt/log_dns
+  register: result_stat_log_dir
+
+- name: Tạo thư mục /opt/log_dns nếu chưa có
+  file:
+    path: /opt/log_dns
+    state: directory
+  when: "not result_stat_log_dir.stat.exists"
+
+- name: Copy script dnscap2logfile
+  copy:
+    src: dnscap2logfile.sh
+    dest: /opt/log_dns/dnscap2logfile.sh
+    mode: 755

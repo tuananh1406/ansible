@@ -1,0 +1,96 @@
+- name: Tải code từ git
+  ansible.builtin.git:
+    repo: https://gitlab-token:{{git_token}}@git.paas.vn/bizfly-dns/bizfly-dns-api.git
+    dest: "{{ V2_PATH }}"
+    version: "{{ git_ver }}"
+    force: yes
+  tags:
+    - install_v2
+    - update_v2
+
+- name: Lấy thông tin pipenv trên server
+  shell: which pipenv
+  register: is_pipenv_installed
+  ignore_errors: true
+  tags:
+    - install_v2
+
+- name: Cài pipenv nếu chưa có
+  pip:
+    name: pipenv==2022.4.8
+    executable: "{{ PIP_PATH }}"
+  become: yes
+  become_user: root
+  when: "is_pipenv_installed.rc != 0"
+  tags:
+    - install_v2
+
+- name: Cài môi trường bằng pipenv
+  command:
+    cmd: "pipenv install --python={{ PYTHON_PATH }}"
+    chdir: "{{ V2_PATH }}"
+  become: yes
+  become_user: root
+  tags:
+    - install_v2
+    - update_v2
+
+- name: Create env.py from vault
+  # https://docs.ansible.com/ansible/2.9/plugins/lookup.html
+  template:
+    src: env.py.j2
+    dest: "{{ ENV_PATH }}"
+  vars:
+    vault_data: "{{ q('hashi_vault',
+         VAULT_INFO.keys()|
+          zip(VAULT_INFO.values())|
+          map('join', '=')|join(' ')
+      )}}"
+  tags:
+    - install_v2
+    - update_v2
+
+- name: Set OS environment variable ENV
+  shell: sed -i '/ENVIRONMENT=/d' /etc/environment \
+    && echo 'ENVIRONMENT={{ ENV_PATH }}' >> /etc/environment
+  become: yes
+  become_user: root
+  tags:
+    - install_v2
+    - update_v2
+
+- name: Set OS environment variable PIPFILE
+  shell: sed -i '/PIPENV_PIPFILE=/d' /etc/environment \
+    && echo 'PIPENV_PIPFILE={{ V2_PATH }}/Pipfile' >> /etc/environment
+  become: yes
+  become_user: root
+  tags:
+    - install_v2
+    - update_v2
+
+- name: Set OS environment variable FLASK_APP
+  shell: sed -i '/FLASK_APP=/d' /etc/environment \
+    && echo 'FLASK_APP={{ V2_PATH }}/app.py' >> /etc/environment
+  become: yes
+  become_user: root
+  tags:
+    - install_v2
+    - update_v2
+
+- name: Tạo script chạy worker
+  template:
+    src: start_v2.sh.j2
+    dest: /opt/start_v2.sh
+    mode: 755
+  tags:
+    - install_v2
+    - update_v2
+
+- name: Thêm config supervisord cho api v2
+  supervisorctl:
+    name: "{{ supervisor_config[2].program}}"
+    state: restarted
+  tags:
+    - update_v2
+    - install_v2
+

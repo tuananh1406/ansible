@@ -1,0 +1,39 @@
+- name: Download dnscap 2.0.1 source
+  get_url:
+   url: https://www.dns-oarc.net/files/dnscap/dnscap-2.0.1.tar.gz
+   dest: /opt/dnscap-2.0.1.tar.gz
+   checksum: sha256:1000d26ea24df06391acccd6663d98532225bf08dec738db1610616f0b480350
+
+- name: Untar source
+  unarchive:
+   src: /opt/dnscap-2.0.1.tar.gz
+   dest: /opt
+   remote_src: yes
+
+- name: Config dnscap
+  shell: ./configure && make && make install
+  args: 
+    chdir: /opt/dnscap-2.0.1
+  async: 1500
+  poll: 0
+  register: config_result
+
+- name: Check config progress
+  async_status:
+    jid: "{{ config_result.ansible_job_id }}"
+  register: job_config
+  until: job_config.finished
+  retries: 30
+  delay: 15
+
+- name: Clean
+  ansible.builtin.file:
+    path: /opt/dnscap-2.0.1.tar.gz
+    state: absent
+    force: yes
+
+- name: Clean
+  ansible.builtin.file:
+    path: /opt/dnscap-2.0.1
+    state: absent
+    force: yes

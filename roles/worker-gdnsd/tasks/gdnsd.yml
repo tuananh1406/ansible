@@ -1,0 +1,95 @@
+- name: Install package mmdb
+  shell: cpanm JSON::PP Socket6 IO::Socket::INET6 HTTP::Daemon Net::DNS --force
+  become: true
+
+- name: Untar source
+  unarchive:
+   src: gdnsd-2.3.tar.gz
+   dest: /opt/
+
+- name: Install gdnsd
+  shell: autoreconf -vif && ./configure
+  args: 
+    chdir: /opt/gdnsd
+
+- name: Make install
+  shell: automake && make install
+  args:
+    chdir: /opt/gdnsd
+
+- name: Create systemd
+  copy:
+    src: /opt/gdnsd/sysd/gdnsd.service
+    dest: /usr/local/etc/gdnsd/config
+    owner: root
+    group: root
+    mode: '0644'    
+    remote_src: yes
+
+
+- name: Creat user and lock
+  shell: useradd -M gdnsd && usermod -L gdnsd
+  ignore_errors: yes
+
+- name: Change owener
+  file:
+    path: /usr/local/var/run/gdnsd/
+    owner: gdnsd
+    group: gdnsd
+
+- name: Copy config file
+  copy:
+    src: config
+    dest: /usr/local/etc/gdnsd/config
+    owner: root
+    group: root
+    mode: '0644'    
+
+- name: Copy dblocation
+  copy:
+    src: free.mmdb
+    dest: /usr/local/etc/gdnsd/geoip/lastest.mmdb
+    owner: root
+    group: root
+    mode: '0644'    
+
+- name: Change config resolver
+  copy:
+    src: resolved.conf
+    dest: /etc/systemd/resolved.conf
+    owner: root
+    group: root
+    mode: '0644'    
+
+- name: Reboot system
+  reboot:
+
+
+- name: Start service
+  service:
+    name: gdnsd
+    enabled: yes
+    state: started
+  ignore_errors: yes
+
+- name: Create plugins folder
+  file:
+    path: /usr/local/etc/gdnsd/plugins
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+
+- name: Create service_types folder
+  file:
+    path: /usr/local/etc/gdnsd/service_types
+    state: directory
+    owner: root
+    group: root
+    mode: 0775        
+
+- name: Clean
+  ansible.builtin.file:
+    path: /opt/gdnsd
+    state: absent
+    force: yes

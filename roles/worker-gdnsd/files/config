@@ -1,0 +1,100 @@
+options => {
+  log_stats => 86400
+  tcp_timeout => 15
+  zones_default_ttl => 3600
+  include_optional_ns => true
+  max_response => 62464
+  max_addtl_rrsets => 256
+  max_cname_depth => 24
+  listen => [ 0.0.0.0 ]
+  http_listen => [ 0.0.0.0 ]
+  zones_rfc1035_auto => true
+}
+
+plugins => {
+  geoip => {
+    maps => {
+      prod_map => {
+        geoip2_db => /usr/local/etc/gdnsd/geoip/lastest.mmdb
+        # nets => /usr/local/etc/gdnsd/geoip/nets.1
+        datacenters => [HN, HCM, SG, USA, OTHER]
+        map => {
+          AS => {
+            VN => {
+              00 => [HN, HCM, SG, USA, OTHER]    # Khong xac dinh
+              44 => [HN, HCM, SG, USA, OTHER]    # Ha Noi
+              13 => [HN, HCM, SG, USA, OTHER]    # Hai Phong
+              72 => [HN, HCM, SG, USA, OTHER]    # Bac Kan
+              71 => [HN, HCM, SG, USA, OTHER]    # Bac Giang
+              74 => [HN, HCM, SG, USA, OTHER]    # Bac Ninh
+              05 => [HN, HCM, SG, USA, OTHER]    # Cao Bang
+              92 => [HN, HCM, SG, USA, OTHER]    # Dien Bien
+              50 => [HN, HCM, SG, USA, OTHER]    # Ha Giang
+              80 => [HN, HCM, SG, USA, OTHER]    # Ha Nam
+              79 => [HN, HCM, SG, USA, OTHER]    # Hai Duong
+              53 => [HN, HCM, SG, USA, OTHER]    # Hoa Binh
+              81 => [HN, HCM, SG, USA, OTHER]    # Hung Yen
+              89 => [HN, HCM, SG, USA, OTHER]    # Lai Chau
+              39 => [HN, HCM, SG, USA, OTHER]    # Lang Son
+              90 => [HN, HCM, SG, USA, OTHER]    # Lao Cai
+              82 => [HN, HCM, SG, USA, OTHER]    # Nam Dinh
+              59 => [HN, HCM, SG, USA, OTHER]    # Ninh Binh
+              83 => [HN, HCM, SG, USA, OTHER]    # Phu Tho
+              34 => [HN, HCM, SG, USA, OTHER]    # Thanh Hoa
+              30 => [HN, HCM, SG, USA, OTHER]    # Quang Ninh
+              32 => [HN, HCM, SG, USA, OTHER]    # Son La
+              35 => [HN, HCM, SG, USA, OTHER]    # Thai Binh
+              85 => [HN, HCM, SG, USA, OTHER]    # Thai Nguyen
+              68 => [HN, HCM, SG, USA, OTHER]    # Tuyen Quang
+              86 => [HN, HCM, SG, USA, OTHER]    # Vinh Phuc
+              70 => [HN, HCM, SG, USA, OTHER]    # Yen Bai
+              52 => [HN, HCM, SG, USA, OTHER]    # Ha Tinh
+              58 => [HN, HCM, SG, USA, OTHER]    # Nghe An
+              62 => [HN, HCM, SG, USA, OTHER]    # Quang Binh
+              64 => [HN, HCM, SG, USA, OTHER]    # Quang Tri
+              20 => [HCM, HN, SG, USA, OTHER]    # TP. HCM
+              78 => [HCM, HN, SG, USA, OTHER]    # Da Nang
+              46 => [HCM, HN, SG, USA, OTHER]    # Binh Dinh
+              76 => [HCM, HN, SG, USA, OTHER]    # Binh Phuoc
+              47 => [HCM, HN, SG, USA, OTHER]    # Binh Thuan
+              88 => [HCM, HN, SG, USA, OTHER]    # Dac Lak
+              91 => [HCM, HN, SG, USA, OTHER]    # Dac Nong
+              49 => [HCM, HN, SG, USA, OTHER]    # Gia Lai
+              54 => [HCM, HN, SG, USA, OTHER]    # Khanh Hoa
+              55 => [HCM, HN, SG, USA, OTHER]    # Kon Tum
+              23 => [HCM, HN, SG, USA, OTHER]    # Lam Dong
+              60 => [HCM, HN, SG, USA, OTHER]    # Ninh Thuan
+              61 => [HCM, HN, SG, USA, OTHER]    # Phu Yen
+              84 => [HCM, HN, SG, USA, OTHER]    # Quang Nam
+              63 => [HCM, HN, SG, USA, OTHER]    # Quang Ngai
+              66 => [HCM, HN, SG, USA, OTHER]    # Hue
+              75 => [HCM, HN, SG, USA, OTHER]    # Binh Duong
+              87 => [HCM, HN, SG, USA, OTHER]    # Can Tho
+              01 => [HCM, HN, SG, USA, OTHER]    # An Giang
+              45 => [HCM, HN, SG, USA, OTHER]    # Vung Tau
+              73 => [HCM, HN, SG, USA, OTHER]    # Bac Lieu
+              03 => [HCM, HN, SG, USA, OTHER]    # Ben Tre
+              77 => [HCM, HN, SG, USA, OTHER]    # Ca Mau
+              43 => [HCM, HN, SG, USA, OTHER]    # Dong Nai
+              09 => [HCM, HN, SG, USA, OTHER]    # Dong Thap
+              93 => [HCM, HN, SG, USA, OTHER]    # Hau Giang
+              21 => [HCM, HN, SG, USA, OTHER]    # Kien Giang
+              24 => [HCM, HN, SG, USA, OTHER]    # Long An
+              65 => [HCM, HN, SG, USA, OTHER]    # Soc Trang
+              33 => [HCM, HN, SG, USA, OTHER]    # Tay Ninh
+              37 => [HCM, HN, SG, USA, OTHER]    # Tien Giang
+              67 => [HCM, HN, SG, USA, OTHER]    # Tra Vinh
+              69 => [HCM, HN, SG, USA, OTHER]    # Vinh Long
+            },
+            SG => [SG, HCM, HN, USA, OTHER]
+            default => [OTHER, SG, HCM, HN, USA]
+          }
+          NA => [USA, HN, HCM, SG, OTHER]
+          default => [OTHER, USA, HN, HCM, SG]
+        }
+      }
+    },
+    resources => {
+      }
+  }
+  }

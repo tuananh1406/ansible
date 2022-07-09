@@ -1,0 +1,37 @@
+- name: Kiểm tra thư mục /opt/dblocation
+  stat:
+    path: /opt/dblocation
+  register: result_stat_log_dir
+
+- name: Tạo thư mục /opt/dblocation nếu chưa có
+  file:
+    path: /opt/dblocation
+    state: directory
+  when: "not result_stat_log_dir.stat.exists"
+
+- name: Tải dblocation
+  get_url:
+   url: "{{ MMDB_LINK }}"
+   dest: /opt/dblocation
+
+- name: Kiểm tra file /usr/local/etc/gdnsd/geoip/lastest.mmdb
+  stat:
+    path: /usr/local/etc/gdnsd/geoip/lastest.mmdb
+  register: result_stat_lastest_mmdb
+
+- name: Xoá file /usr/local/etc/gdnsd/geoip/lastest.mmdb nếu đã có
+  file:
+    path: /usr/local/etc/gdnsd/geoip/lastest.mmdb
+    state: absent
+  when: "result_stat_lastest_mmdb.stat.exists"
+
+- name: Tạo symbolic link cho dblocation mới
+  file:
+   src: "/opt/dblocation/{{ MMDB_LINK.split('/')[-1] }}"
+   dest: /usr/local/etc/gdnsd/geoip/lastest.mmdb
+   state: link
+
+- name: Chạy lại gdnsd
+  service:
+    name: gdnsd
+    state: restarted

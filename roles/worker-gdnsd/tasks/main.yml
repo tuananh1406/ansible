@@ -1,0 +1,85 @@
+---
+- name: Install deps 
+  apt:
+    update_cache: yes
+    state: present
+    name: [
+    'autoconf',
+    'automake',
+    'build-essential',
+    'checkinstall',
+    'cpanminus',
+    'g++',
+    'git',
+    'libbz2-dev',
+    'libc6-dev',
+    'libev-dev',
+    'libgdbm-dev',
+    'libldns-dev',
+    'libmaxminddb-dev',
+    'libncursesw5-dev',
+    'libpcap-dev',
+    'libreadline-gplv2-dev',
+    'libsodium-dev',
+    'libsqlite3-dev',
+    'libssl-dev',
+    'libtool',
+    'libunwind-dev',
+    'libunwind8',
+    'liburcu*',
+    'liburcu-dev',
+    'libyaml-perl',
+    'mmdb-bin',
+    'perl',
+    'pkg-config',
+    'ragel',
+    'tk-dev',
+    'zlib1g-dev',
+    ]
+  tags:
+    - install_python
+    - install_gdnsd
+
+- name: Check gdnsd before install
+  stat:
+    path: "{{ GDNSD_PATH }}"
+  register: is_gdnsd_installed
+  tags:
+    - install_gdnsd
+
+- import_tasks: gdnsd.yml
+  become: yes
+  become_user: root
+  when: "not is_gdnsd_installed.stat.exists"
+  tags:
+    - install_gdnsd
+
+- name: Check python3.6.12 before install
+  stat:
+    path: "{{ PYTHON_PATH }}"
+  register: is_python_installed
+  tags:
+    - install_python
+
+- name: check python version
+  command: "{{ PYTHON_PATH }} --version"
+  register: python_version
+  when: "is_python_installed.stat.exists"
+  changed_when: False
+  failed_when: False
+  tags:
+    - install_python
+
+- import_tasks: python3-6-12.yml
+  become: yes
+  become_user: root
+  when: "not is_python_installed.stat.exists or python_version is not defined or PYTHON_VERSION|string not in python_version.stdout"
+  tags:
+    - install_python
+
+- name: Cài dnscap và logrotate
+  import_tasks: dnscap_logrotate.yml
+  become: yes
+  become_user: root
+  tags:
+    - install_logrotate
