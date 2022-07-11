@@ -39,6 +39,7 @@
   tags:
     - install_python
     - install_gdnsd
+    - install_logrotate
 
 - name: Check gdnsd before install
   stat:
