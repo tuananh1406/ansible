@@ -1,7 +1,9 @@
 ### ANSIBLE AUTO DEPLOY HỆ THỐNG
 ## Các tags hiện  có
 * install_gdnsd: Cài đặt gdnsd 2.3 lên server
+[![asciicast](https://asciinema.org/a/QYky5RWI5XPDrBdR3gAFTGIwT.svg)](https://asciinema.org/a/QYky5RWI5XPDrBdR3gAFTGIwT)
 * install_python: Cài đặt python 3.6.12 lên server
+[![asciicast](https://asciinema.org/a/cPjiwrd7HKWXuZMQJl3G5ihUZ.svg)](https://asciinema.org/a/cPjiwrd7HKWXuZMQJl3G5ihUZ)
 * install_logrotate: Cài đặt dnscap và setup logrotate trên server
 # Ansible-playbook:
 ```shell
