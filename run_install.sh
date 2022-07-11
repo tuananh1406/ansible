@@ -73,4 +73,6 @@ then
         # Cài logrotate
         echo -e "\e[1m\e[100mCài logrotate bằng ansible\e[0m"
         ansible-playbook -i hosts worker.yml -l test-1 -t install_logrotate
+        echo -e "\e[1m\e[100mHiển thị thiết lập của logrotate\e[0m"
+        multipass exec ${INSTANCE_NAME} -- sudo bash -c 'stat /etc/logrotate.d/service-log; cat /etc/logrotate.d/service-log'
 fi
