@@ -52,8 +52,8 @@ then
         ansible-playbook -i hosts worker.yml -l test-1 -t install_python
 
         echo -e "\e[1m\e[100mKiểm tra python 3 trên instance sau khi cài\e[0m"
-        multipass exec ${INSTANCE_NAME} -- bash -c 'ls /usr/local/bin/python3.6'
-        multipass exec ${INSTANCE_NAME} -- /usr/local/bin/python3.6 --version
+        multipass exec ${INSTANCE_NAME} -- bash -c 'ls /usr/local/bin/python3.9'
+        multipass exec ${INSTANCE_NAME} -- /usr/local/bin/python3.9 --version
 
         cd $CURRENT_PWD
         exit 0;
