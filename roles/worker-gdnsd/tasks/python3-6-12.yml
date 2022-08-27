@@ -1,19 +1,19 @@
-- name: Download python3.6.12 source
+- name: Download python "{{ PYTHON_VERSION }}" source
   get_url:
-   url: https://www.python.org/ftp/python/3.6.12/Python-3.6.12.tar.xz
-   dest: /opt/Python-3.6.12.tar.xz
-   checksum: md5:9ca8ca6f206e9ac0f0726ecb4ebb6e2c
+   url: https://www.python.org/ftp/python/{{ PYTHON_VERSION }}/Python-{{ PYTHON_VERSION }}.tar.xz
+   dest: /opt/Python-{{ PYTHON_VERSION }}.tar.xz
+   checksum: "{{ PYTHON_CHECKSUM }}"
 
 - name: Untar source
   unarchive:
-   src: /opt/Python-3.6.12.tar.xz
+   src: /opt/Python-{{ PYTHON_VERSION }}.tar.xz
    dest: /opt
    remote_src: yes
 
-- name: Config python3.6.12
+- name: Config python {{ PYTHON_VERSION }}
   shell: ./configure --enable-optimizations --with-ensurepip=install --with-lto --enable-loadable-sqlite-extensions
   args: 
-    chdir: /opt/Python-3.6.12
+    chdir: /opt/Python-{{ PYTHON_VERSION }}
   async: 1500
   poll: 0
   register: config_result
@@ -29,7 +29,7 @@
 - name: Install python
   shell: make -j 8 && make altinstall
   args:
-    chdir: /opt/Python-3.6.12
+    chdir: /opt/Python-{{ PYTHON_VERSION }}
   async: 3000
   poll: 0
   register: install_result
@@ -44,12 +44,12 @@
 
 - name: Clean
   ansible.builtin.file:
-    path: /opt/Python-3.6.12.tar.xz
+    path: /opt/Python-{{ PYTHON_VERSION }}.tar.xz
     state: absent
     force: yes
 
 - name: Clean
   ansible.builtin.file:
-    path: /opt/Python-3.6.12
+    path: /opt/Python-{{ PYTHON_VERSION }}
     state: absent
     force: yes
