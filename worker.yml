@@ -13,4 +13,4 @@
     PYTHON_PATH: /usr/local/bin/python3.9
     PIP_PATH: /usr/local/bin/pip3.9
     PYTHON_VERSION: "3.9.8"
-    PYTHON_CHECKSUM: "md5:83419bd73655813223c2cf2afb11f83c"
+    PYTHON_CHECKSUM: "md5:d4875c1832c8f757280794f6d5e9c95f"
